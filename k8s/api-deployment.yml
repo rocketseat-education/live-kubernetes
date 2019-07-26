@@ -1,0 +1,43 @@
+﻿apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+  labels:
+    app: api
+spec:
+  selector:
+    matchLabels:
+      app: api
+      tier: backend
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: api
+        tier: backend
+    spec:
+      containers:
+        - name: api
+          image: pellizzetti/leaderboard:0.0.2
+          ports:
+            - containerPort: 3333
+          resources:
+            requests:
+              memory: 50Mi
+              cpu: 20m
+            limits:
+              memory: 150Mi
+              cpu: 60m
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3333
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 1
+            successThreshold: 1
